@@ -1,7 +1,7 @@
 """Constants for the Candy integration."""
 
 DOMAIN = "candy"
-PLATFORMS = ["sensor","switch"]
+PLATFORMS = ["sensor", "switch", "number","select"]
 
 DATA_KEY_COORDINATOR = "coordinator"
 
@@ -17,6 +17,9 @@ UNIQUE_ID_TUMBLE_REMAINING_TIME = "{0}-tumble_remaining_time"
 
 UNIQUE_ID_OVEN = "{0}-oven"
 UNIQUE_ID_OVEN_TEMP = "{0}-oven-temp"
+UNIQUE_ID_OVEN_IP = "{0}-oven-ip"
+UNIQUE_ID_OVEN_TEMPSET = "{0}-oven-tempset"
+UNIQUE_ID_OVEN_TEMPO_RIMANENTE = "{0}-oven-tempo_rimanente"
 UNIQUE_ID_OVEN_PROGRAM = "{0}-oven-program"
 UNIQUE_ID_OVEN_SELECTION = "{0}-oven-selection"
 UNIQUE_ID_OVEN_TEMP_REACHED = "{0}-oven-temp_reached"
@@ -32,4 +35,3 @@ DEVICE_NAME_DISHWASHER = "Dishwasher"
 
 SUGGESTED_AREA_BATHROOM = "Bathroom"
 SUGGESTED_AREA_KITCHEN = "Kitchen"
-

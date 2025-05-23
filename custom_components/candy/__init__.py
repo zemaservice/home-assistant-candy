@@ -41,14 +41,17 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
         hass,
         _LOGGER,
         name=DOMAIN,
-        update_interval=timedelta(seconds=60),
+        update_interval=timedelta(seconds=30),
         update_method=update_status,
+        
     )
-
+    coordinator.device_ip = ip_address           ##### salvo il client in hass
     await coordinator.async_config_entry_first_refresh()
 
     hass.data.setdefault(DOMAIN, {})[config_entry.entry_id] = {
-        DATA_KEY_COORDINATOR: coordinator
+        DATA_KEY_COORDINATOR: coordinator,
+        # "client": client,                 
+        
     }
 
     await hass.config_entries.async_forward_entry_setups(config_entry, PLATFORMS)
@@ -63,3 +66,10 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         del hass.data[DOMAIN]
 
     return unload_ok
+
+
+
+async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Reload config entry."""
+    await async_unload_entry(hass, entry)
+    await async_setup_entry(hass, entry)

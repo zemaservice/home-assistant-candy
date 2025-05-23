@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from typing import Any, Mapping
-
+# from homeassistant.config_entries import ConfigEntry  ##################
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
@@ -18,11 +18,13 @@ from .client.model import (DishwasherState, DishwasherStatus,
                            DryerProgramState, MachineState, OvenStatus,
                            TumbleDryerStatus)
 from .const import *
-
+# from .client import CandyClient
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, async_add_entities):
     """Set up the Candy sensors from config entry."""
-
+    # ip_address = config_entry.data.get("ip")
+    # ip_address = config_entry.data[CONF_IP_ADDRESS]                    #############################
+    # config_ip = self.device_ip 
     config_id = config_entry.entry_id
     coordinator = hass.data[DOMAIN][config_id][DATA_KEY_COORDINATOR]
 
@@ -41,7 +43,16 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
     elif isinstance(coordinator.data, OvenStatus):
         async_add_entities([
             CandyOvenSensor(coordinator, config_id),
-            CandyOvenTempSensor(coordinator, config_id)
+            CandyOvenTempSensor(coordinator, config_id),
+            CandyOvenProgSensor(coordinator, config_id),
+            CandyOvenSelSensor(coordinator, config_id),
+            CandyOventempReachedSensor(coordinator, config_id),
+            CandyOvenRemoteControlSensor(coordinator, config_id),
+            CandyOvenSicurezzaBambiniSensor(coordinator, config_id),
+            CandyOvenTempsetSensor(coordinator, config_id),
+            CandyOvenTempoRimanenteSensor(coordinator, config_id),
+            CandyIPSensor(coordinator, config_id)
+    
         ])
     elif isinstance(coordinator.data, DishwasherStatus):
         async_add_entities([
@@ -56,6 +67,7 @@ class CandyBaseSensor(CoordinatorEntity, SensorEntity):
     def __init__(self, coordinator: DataUpdateCoordinator, config_id: str):
         super().__init__(coordinator)
         self.config_id = config_id
+        
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -287,77 +299,9 @@ class CandyTumbleRemainingTimeSensor(CandyBaseSensor):
         return "mdi:progress-clock"
 
 
-class CandyOvenSensor(CandyBaseSensor):
-
-    def device_name(self) -> str:
-        return DEVICE_NAME_OVEN
-
-    def suggested_area(self) -> str:
-        return SUGGESTED_AREA_KITCHEN
-
-    @property
-    def name(self) -> str:
-        return self.device_name()
-
-    @property
-    def unique_id(self) -> str:
-        return UNIQUE_ID_OVEN.format(self.config_id)
-
-    @property
-    def state(self) -> StateType:
-        status: OvenStatus = self.coordinator.data
-        return str(status.machine_state)
-
-    @property
-    def icon(self) -> str:
-        return "mdi:stove"
-
-    @property
-    def extra_state_attributes(self) -> Mapping[str, Any]:
-        status: OvenStatus = self.coordinator.data
-
-        attributes = {
-            "program": status.program,
-            "selection": status.selection,
-            "temperature": status.temp,
-            "temperature_reached": status.temp_reached,
-            "remote_control": status.remote_control,
-        }
-
-        if status.program_length_minutes is not None:
-            attributes["program_length_minutes"] = status.program_length_minutes
-
-        return attributes
 
 
-class CandyOvenTempSensor(CandyBaseSensor):
 
-    def device_name(self) -> str:
-        return DEVICE_NAME_OVEN
-
-    def suggested_area(self) -> str:
-        return SUGGESTED_AREA_KITCHEN
-
-    @property
-    def name(self) -> str:
-        return "Oven temperature"
-
-    @property
-    def unique_id(self) -> str:
-        return UNIQUE_ID_OVEN_TEMP.format(self.config_id)
-
-    @property
-    def state(self) -> StateType:
-        status: OvenStatus = self.coordinator.data
-        return status.temp
-
-    @property
-    def unit_of_measurement(self) -> str:
-        return UnitOfTemperature.CELSIUS
-
-    @property
-    def icon(self) -> str:
-        return "mdi:thermometer"
 
 
 class CandyDishwasherSensor(CandyBaseSensor):
@@ -440,3 +384,315 @@ class CandyDishwasherRemainingTimeSensor(CandyBaseSensor):
     @property
     def icon(self) -> str:
         return "mdi:progress-clock"
+        
+
+        
+class CandyOvenTempSensor(CandyBaseSensor):
+
+    def device_name(self) -> str:
+        return DEVICE_NAME_OVEN
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return "Oven temperature"
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_OVEN_TEMP.format(self.config_id)
+
+    @property
+    def state(self) -> StateType:
+        status: OvenStatus = self.coordinator.data
+        return status.temp
+
+    @property
+    def unit_of_measurement(self) -> str:
+        return UnitOfTemperature.CELSIUS
+
+    @property
+    def icon(self) -> str:
+        return "mdi:thermometer"      
+
+class CandyOvenSensor(CandyBaseSensor):
+
+    def device_name(self) -> str:
+        return DEVICE_NAME_OVEN
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return self.device_name()
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_OVEN.format(self.config_id)
+
+    @property
+    def state(self) -> StateType:
+        status: OvenStatus = self.coordinator.data
+        return str(status.machine_state)
+
+    @property
+    def icon(self) -> str:
+        return "mdi:stove"
+
+    @property
+    def extra_state_attributes(self) -> Mapping[str, Any]:
+        status: OvenStatus = self.coordinator.data
+
+        attributes = {
+            "program": status.program,
+            "selection": status.selection,
+            "temperature": status.temp,
+            "temperature_reached": status.temp_reached,
+            "remote_control": status.remote_control,
+            "errore": status.errore,
+            "ricetta": status.ricetta,
+            "ricetta_passaggio": status.ricetta_passaggio,
+            "pausa": status.pausa,
+            "sicurezzabambini": status.sicurezzabambini,
+            "tempset": status.tempset,
+            "delaystart": status.delaystart,
+            "tempo_rimanente": 0 if status.temporimanente == 65535 else status.temporimanente,
+                # status.temporimanente,
+            "ora": status.ora,
+            "min": status.min,
+            "sec": status.sec,
+            "fwver": status.fwver,
+            "ts": status.ts,
+           
+        }
+
+        if status.program_length_minutes is not None:
+            attributes["program_length_minutes"] = status.program_length_minutes
+
+        return attributes
+        
+        
+class CandyOvenProgSensor(CandyBaseSensor):
+
+    def device_name(self) -> str:
+        return DEVICE_NAME_OVEN
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return "Oven Program"
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_OVEN_PROGRAM.format(self.config_id)
+
+    @property
+    def state(self) -> StateType:
+        status: OvenStatus = self.coordinator.data
+        return status.program
+
+
+
+    @property
+    def icon(self) -> str:
+        return "mdi:stove"        
+        
+class CandyOvenSelSensor(CandyBaseSensor):
+
+    def device_name(self) -> str:
+        return DEVICE_NAME_OVEN
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return "Oven Selection"
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_OVEN_SELECTION.format(self.config_id)
+
+    @property
+    def state(self) -> StateType:
+        status: OvenStatus = self.coordinator.data
+        return status.selection
+
+
+
+    @property
+    def icon(self) -> str:
+        return "mdi:stove"              
+        
+        
+class CandyOventempReachedSensor(CandyBaseSensor): 
+
+    def device_name(self) -> str:
+        return DEVICE_NAME_OVEN
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return "Oven Temp Reached"
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_OVEN_TEMP_REACHED.format(self.config_id)
+
+    @property
+    def state(self) -> StateType:
+        status: OvenStatus = self.coordinator.data
+        return status.temp_reached
+
+
+
+    @property
+    def icon(self) -> str:
+        return "mdi:stove"              
+                
+        
+class CandyOvenRemoteControlSensor(CandyBaseSensor): 
+
+    def device_name(self) -> str:
+        return DEVICE_NAME_OVEN
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return "Oven Remote Control"
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_OVEN_REMOTE_CONTROL.format(self.config_id)
+
+    @property
+    def state(self) -> StateType:
+        status: OvenStatus = self.coordinator.data
+        return status.remote_control 
+
+
+
+    @property
+    def icon(self) -> str:
+        return "mdi:stove"              
+                        
+class CandyOvenSicurezzaBambiniSensor(CandyBaseSensor): 
+
+    def device_name(self) -> str:
+        return DEVICE_NAME_OVEN
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return "Oven Sicurezza Bambini"
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_OVEN_SICUREZZA_BAMBINI.format(self.config_id)
+
+    @property
+    def state(self) -> StateType:
+        status: OvenStatus = self.coordinator.data
+        return status.sicurezzabambini
+
+
+
+    @property
+    def icon(self) -> str:
+        return "mdi:stove"           
+        
+class CandyOvenTempsetSensor(CandyBaseSensor): 
+
+    def device_name(self) -> str:
+        return DEVICE_NAME_OVEN
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return "Oven Temperatura impostata"
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_OVEN_TEMPSET.format(self.config_id)
+
+    @property
+    def state(self) -> StateType:
+        status: OvenStatus = self.coordinator.data
+        return status.tempset
+
+
+
+    @property
+    def icon(self) -> str:
+        return "mdi:stove"                
+        
+class CandyOvenTempoRimanenteSensor(CandyBaseSensor): 
+
+    def device_name(self) -> str:
+        return DEVICE_NAME_OVEN
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return "Oven Tempo Rimanente"
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_OVEN_TEMPO_RIMANENTE.format(self.config_id)
+
+    @property
+    def state(self) -> StateType:
+        status: OvenStatus = self.coordinator.data
+        return 0 if status.temporimanente == 65535 else status.temporimanente
+
+
+
+    @property
+    def icon(self) -> str:
+        return "mdi:stove"                    
+        
+class CandyIPSensor(CandyBaseSensor,):
+    
+    def device_name(self) -> str:
+        return DEVICE_NAME_OVEN
+
+    def suggested_area(self) -> str:
+        return SUGGESTED_AREA_KITCHEN
+
+    @property
+    def name(self) -> str:
+        return "Oven Ip"
+
+    @property
+    def unique_id(self) -> str:
+        return UNIQUE_ID_OVEN_IP.format(self.config_id)
+    @property
+    def state(self) -> StateType:
+     
+       # Legge l'IP dal coordinator, così diventa dinamico
+        return getattr(self.coordinator, "device_ip", "unknown")        
+
+    # @property
+    # def state(self) -> StateType:
+    #     status: OvenStatus = self.coordinator.data
+    #     return  "192.168.1.181"
+        
+
+
+    @property
+    def icon(self) -> str:
+        return "mdi:ip"    
