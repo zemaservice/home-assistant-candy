@@ -11,7 +11,7 @@ Custom component for [Home Assistant](https://homeassistant.io) that integrates 
 - Elettrodomestici supportati:
 - lavatrice
 - asciugatrice
-- forno
+- forno modificato da me aggiuto switch e select per contollo remoto
 - lavastoviglie
 - Utilizza l'API locale e il suo endpoint di stato
 - Crea diversi sensori, come lo stato del dispositivo e il tempo rimanente. Tutto il resto viene visualizzato come attributi del sensore
