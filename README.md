@@ -7,31 +7,30 @@
 Custom component for [Home Assistant](https://homeassistant.io) that integrates Candy/Haier/Simply-Fi home appliances.
 
 
-## Features
-- Supported appliances:
-   - washing machine 
-   - tumble dryer
-   - oven
-   - dishwasher
-- Uses the local API and its status endpoint
-- Creates various sensors, such as device state and remaining time. Everything else is exposed as sensor attributes
+## Funzionalità
+- Elettrodomestici supportati:
+- lavatrice
+- asciugatrice
+- forno
+- lavastoviglie
+- Utilizza l'API locale e il suo endpoint di stato
+- Crea diversi sensori, come lo stato del dispositivo e il tempo rimanente. Tutto il resto viene visualizzato come attributi del sensore
 
-## Installation
+## Installazione
 
-1. Install [HACS](https://hacs.xyz/)
-2. Go to the integrations list in HACS and search for `Candy Simply-Fi`
-4. Restart Home Assistant
-5. Go to the Integrations page, click Add integrations and select `Candy`
-6. Complete the config flow
+1. Installa [HACS](https://hacs.xyz/)
+2. Vai all'elenco delle integrazioni in HACS e cerca `Candy Simply-Fi`
+4. Riavvia Home Assistant
+5. Vai alla pagina Integrazioni, fai clic su Aggiungi integrazioni e seleziona `Candy`
+6. Completa il flusso di configurazione
 
-## Configuration
+## Configurazione
 
-You need the IP address of the machine and the encryption key. This can be guessed with [CandySimplyFi-tool](https://github.com/MelvinGr/CandySimplyFi-tool).
+Sono necessari l'indirizzo IP del dispositivo e la chiave di crittografia. Questi possono essere ricavati con [CandySimplyFi-tool](https://github.com/MelvinGr/CandySimplyFi-tool).
 
+## Il mio dispositivo non è supportato. Potete aiutarmi?
 
-## My device isn't supported. Can you help?
+Sì. Se disponi di un dispositivo non ancora supportato o visualizzi un errore, accedi alla [sezione Discussioni](https://github.com/ofalvai/home-assistant-candy/discussions/categories/device-support-improvements). Apri una nuova discussione o commenta una discussione esistente con le seguenti informazioni:
 
-Yes. If you have an appliance that is not supported yet, or you see an error, head over to the [Discussions section](https://github.com/ofalvai/home-assistant-candy/discussions/categories/device-support-improvements). Open a new thread or comment to an existing one with the following information:
-
-- The status API response of your device (use [CandySimplyFi-tool](https://github.com/MelvinGr/CandySimplyFi-tool) to get the JSON)
-- A brief explanation of what each field means in the response and how it changes based on the device state, eg. _The `SpinSp` field is probably the spin speed divided by 100, I have seen values 6, 8, 10 and 12 in the response_
+- La risposta API sullo stato del tuo dispositivo (utilizza [CandySimplyFi-tool](https://github.com/MelvinGr/CandySimplyFi-tool) per ottenere il file JSON)
+- Una breve spiegazione del significato di ciascun campo nella risposta e di come cambia in base allo stato del dispositivo, ad esempio: _Il campo `SpinSp` è probabilmente la velocità di centrifuga divisa per 100; ho visto i valori 6, 8, 10 e 12 nella risposta_
